@@ -1,44 +1,41 @@
 # DFRobot_MCP2515
-* [中文版](./README_CN.md)
+* [English Version](./README.md)
 
-CAN-BUS is a common industrial bus because of its long travel distance, medium communication speed and high reliability. It is commonly found on modern machine tools and as an automotive diagnostic bus. This CAN-BUS Shield adopts MCP2515 CAN Bus controller with SPI interface and MCP2551 CAN transceiver to give your Arduino/Seeeduino CAN-BUS capibility. With an OBD-II converter cable added on and the OBD-II library imported, you are ready to build an onboard diagnostic device or data logger.
+CAN-BUS由于其传输距离长、通信速度中等、可靠性高等特点，是一种常用的工业总线。它在现代机床和汽车诊断总线上普遍存在。该CAN总线屏蔽采用带有SPI接口的MCP2515 CAN总线控制器和MCP2551 CAN收发器，实现Arduino/Seeeduino CAN总线功能。随着OBD-II转换器电缆的添加和OBD-II库的导入，您可以准备构建一个板载诊断设备或数据记录器。
 
-![Product Photo Show](./resources/images/MCP2515.png)
+![产品实物图](./resources/images/MCP2515.png)
 
 
-## Product Link (https://www.dfrobot.com/product-1444.html)
+## 产品链接 (https://www.dfrobot.com.cn/goods-1264.html)
     SKU: DFR0370
 
+## 目录
 
-## Table of Contents
-
-* [Summary](#summary)
-* [Installation](#installation)
-* [Methods](#methods)
-* [Compatibility](#compatibility)
-* [History](#history)
-* [Credits](#credits)
-
-
-## Summary
-
-- Implements CAN V2.0B at up to 1 Mb/s
-- SPI Interface up to 10 MHz
-- Standard (11 bit) and extended (29 bit) data and remote frames
-- Two receive buffers with prioritized message storage
-- Industrial standard 9 pin sub-D connector
-- Two LED indicators
+* [概述](#概述)
+* [库安装](#库安装)
+* [方法](#方法)
+* [兼容性](#兼容性)
+* [历史](#历史)
+* [创作者](#创作者)
 
 
-## Installation
+## 概述
 
-There two methods:
+* 支持标准帧、扩展帧收发，支持轮询和中断两种接收方式
+* 提供uart、I2C、DB9及接线柱等多种接口
+* 支持SD卡数据存储
+* 支持Arduino主板供电以及DB9接口供电
 
-1. To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
-2. Search the DFRobot_SCD4X library from the Arduino Software Library Manager and download it.
+
+## 库安装
+
+这里有2种安装方法：
+
+1. 使用此库前，请首先下载库文件，将其粘贴到\Arduino\libraries目录中，然后打开examples文件夹并在该文件夹中运行演示。
+2. 直接在Arduino软件库管理中搜索下载 DFRobot_MCP2515 库。
 
 
-## Methods
+## 方法
 
 ```C++
 
@@ -166,7 +163,7 @@ There two methods:
 ```
 
 
-## Compatibility
+## 兼容性
 
 MCU                | Work Well    | Work Wrong   | Untested    | Remarks
 ------------------ | :----------: | :----------: | :---------: | :----:
@@ -174,12 +171,13 @@ Arduino Uno        |      √       |              |             |
 Arduino MEGA2560   |      √       |              |             |
 Arduino Leonardo   |      √       |              |             |
 
-## History
 
-- 2022/05/25 - Version 1.0.0 released.
+## 历史
+
+- 2022/05/25 - 1.0.0 版本
 
 
-## Credits
+## 创作者
 
 This software is written by loovee ([luweicong@seeed.cc](luweicong@seeed.cc "luweicong@seeed.cc")) for seeed studio<br>
 and is licensed under [The MIT License](http://opensource.org/licenses/mit-license.php). Check License.txt for more information.<br>

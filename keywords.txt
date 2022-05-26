@@ -1,31 +1,35 @@
 #######################################
-# Syntax Coloring Map For debug_lvc
+# Syntax Coloring Map For DFRobot_MCP2515
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-MCPCAN	KEYWORD1
-mcp_can_dfs	KEYWORD1
-mcp_can	KEYWORD1
+
+DFRobot_MCP2515	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin	KEYWORD2
-init_Mask	KEYWORD2
-init_Filter	KEYWORD2
 
-sendMsgBuf	KEYWORD2
-readMsgBuf	KEYWORD2
+begin	KEYWORD2
+init	KEYWORD2
+initMask	KEYWORD2
+initFilter	KEYWORD2
+
+getCanId	KEYWORD2
+isRemoteRequest	KEYWORD2
+isExtendedFrame	KEYWORD2
 checkReceive	KEYWORD2
 checkError	KEYWORD2
-getCanId	KEYWORD2
-init	KEYWORD2
+sendMsgBuf	KEYWORD2
+readMsgBuf	KEYWORD2
+readMsgBufID	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
+
 CAN_5KBPS	LITERAL1
 CAN_10KBPS	LITERAL1
 CAN_20KBPS	LITERAL1
@@ -47,41 +51,13 @@ CAN_CTRLERROR	LITERAL1
 CAN_GETTXBFTIMEOUT	LITERAL1
 CAN_SENDMSGTIMEOUT	LITERAL1
 CAN_FAIL	LITERAL1
-Filter_t	LITERAL1
-MCP_RXF0	LITERAL1
-MCP_RXF1	LITERAL1
-MCP_RXF2	LITERAL1
-MCP_RXF3	LITERAL1
-MCP_RXF4	LITERAL1
-MCP_RXF5	LITERAL1
-Masker_t	LITERAL1
-MCP_RXM0	LITERAL1
-MCP_RXM1	LITERAL1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+eFilter_t	LITERAL1
+MCP2515_RXF0	LITERAL1
+MCP2515_RXF1	LITERAL1
+MCP2515_RXF2	LITERAL1
+MCP2515_RXF3	LITERAL1
+MCP2515_RXF4	LITERAL1
+MCP2515_RXF5	LITERAL1
+eMasker_t	LITERAL1
+MCP2515_RXM0	LITERAL1
+MCP2515_RXM1	LITERAL1

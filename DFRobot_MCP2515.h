@@ -1,46 +1,24 @@
-# DFRobot_MCP2515
-* [中文版](./README_CN.md)
+/*!
+ * @file  DFRobot_MCP2515.h
+ * @brief  Define infrastructure of DFRobot_MCP2515 class
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  Jansion
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
+ * @version  V1.0
+ * @date  2022-05-25
+ * @url  https://github.com/DFRobot/DFRobot_MCP2515
+ */
+#ifndef _DFROBOT_MCP2515_H_
+#define _DFROBOT_MCP2515_H_
 
-CAN-BUS is a common industrial bus because of its long travel distance, medium communication speed and high reliability. It is commonly found on modern machine tools and as an automotive diagnostic bus. This CAN-BUS Shield adopts MCP2515 CAN Bus controller with SPI interface and MCP2551 CAN transceiver to give your Arduino/Seeeduino CAN-BUS capibility. With an OBD-II converter cable added on and the OBD-II library imported, you are ready to build an onboard diagnostic device or data logger.
+#include "DFRobot_MCP2515DFS.h"
 
-![Product Photo Show](./resources/images/MCP2515.png)
+#define MAX_MESSAGE_LENGTH 8   ///< Maximum information length
 
-
-## Product Link (https://www.dfrobot.com/product-1444.html)
-    SKU: DFR0370
-
-
-## Table of Contents
-
-* [Summary](#summary)
-* [Installation](#installation)
-* [Methods](#methods)
-* [Compatibility](#compatibility)
-* [History](#history)
-* [Credits](#credits)
-
-
-## Summary
-
-- Implements CAN V2.0B at up to 1 Mb/s
-- SPI Interface up to 10 MHz
-- Standard (11 bit) and extended (29 bit) data and remote frames
-- Two receive buffers with prioritized message storage
-- Industrial standard 9 pin sub-D connector
-- Two LED indicators
-
-
-## Installation
-
-There two methods:
-
-1. To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
-2. Search the DFRobot_SCD4X library from the Arduino Software Library Manager and download it.
-
-
-## Methods
-
-```C++
+class DFRobot_MCP2515
+{
+public:
 
     /**
      * @fn DFRobot_MCP2515
@@ -163,37 +141,40 @@ There two methods:
      */
     INT8U readMsgBufID(INT32U *ID, INT8U *len, INT8U *buf);
 
-```
+private:
 
+    void mcpReset(void);
+    INT8U mcpReadRegister(const INT8U RegAddr);
+    void mcpReadMulitiRegisters(const INT8U RegAddr, INT8U *buf, INT8U len);
+    void mcpSetRegister(const INT8U RegAddr, const INT8U value);
+    void mcpSetMulitRegisterS(const INT8U RegAddr, const INT8U *buf, const INT8U len);
+    void mcpInitBuffers(void);
+    void mcpModifyRegister(const INT8U RegAddr, const INT8U mask, const INT8U data);
+    INT8U mcpReadStatus(void);
+    INT8U mcpSetMode(const INT8U newMode);
+    INT8U mcpConfigRate(const INT8U canSpeed);
+    INT8U mcpInit(const INT8U canSpeed);
+    void mcpWriteid( const INT8U mcpAddr, const INT8U ext, const INT32U id );
+    void mcpReadid( const INT8U mcpAddr, INT8U* ext, INT32U* id );
+    void mcpWritecanMsg( const INT8U sidhAddr );
+    void mcpReadcanMsg( const INT8U sidhAddr);
+    void mcpStarttransmit(const INT8U mcpAddr);
+    INT8U mcpGetNextFreeTXBuf(INT8U *txbuf_n);
+    INT8U setMsg(INT32U id, INT8U ext, INT8U len, INT8U rtr, INT8U *pData);
+    INT8U setMsg(INT32U id, INT8U ext, INT8U len, INT8U *pData);
+    INT8U clearMsg(void);
+    INT8U readMsg(void);
+    INT8U sendMsg(void);
 
-## Compatibility
+private:
 
-MCU                | Work Well    | Work Wrong   | Untested    | Remarks
------------------- | :----------: | :----------: | :---------: | :----:
-Arduino Uno        |      √       |              |             |
-Arduino MEGA2560   |      √       |              |             |
-Arduino Leonardo   |      √       |              |             |
+    INT8U   canExtFlg;
+    INT32U  canID;
+    INT8U   canDlc;
+    INT8U   canData[MAX_MESSAGE_LENGTH];
+    INT8U   canRtr;
+    INT8U   canFilhit;
+    INT8U   _csPin;
+};
 
-## History
-
-- 2022/05/25 - Version 1.0.0 released.
-
-
-## Credits
-
-This software is written by loovee ([luweicong@seeed.cc](luweicong@seeed.cc "luweicong@seeed.cc")) for seeed studio<br>
-and is licensed under [The MIT License](http://opensource.org/licenses/mit-license.php). Check License.txt for more information.<br>
-
-Contributing to this software is warmly welcomed. You can do this basically by<br>
-[forking](https://help.github.com/articles/fork-a-repo), committing modifications and then [pulling requests](https://help.github.com/articles/using-pull-requests) (follow the links above<br>
-for operating guide). Adding change log and your contact into file header is encouraged.<br>
-Thanks for your contribution.
-
-Seeed Studio is an open hardware facilitation company based in Shenzhen, China. <br>
-Benefiting from local manufacture power and convenient global logistic system, <br>
-we integrate resources to serve new era of innovation. Seeed also works with <br>
-global distributors and partners to push open hardware movement.<br>
-
-
-[![Analytics](https://ga-beacon.appspot.com/UA-46589105-3/CAN_BUS_Shield)](https://github.com/igrigorik/ga-beacon)
-
+#endif
