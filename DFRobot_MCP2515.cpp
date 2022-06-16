@@ -255,7 +255,7 @@ uint8_t DFRobot_MCP2515::mcpInit(const uint8_t canSpeed)
 
         mcpInitBuffers();
 
-        value = MCP2515_RX0IF | MCP2515_RX1IF
+        value = MCP2515_RX0IF | MCP2515_RX1IF;
         writeReg(MCP2515_CANINTE, &value, 1);
 
         modifyReg(MCP2515_RXB0CTRL,
