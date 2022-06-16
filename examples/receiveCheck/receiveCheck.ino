@@ -4,7 +4,7 @@
  * @n  send data coming to fast, such as less than 10ms, you can use this way
  * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @license  The MIT License (MIT)
- * @author  Jansion
+ * @author  Arduinolibrary
  * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
  * @version  V1.0
  * @date  2022-05-25
@@ -18,23 +18,14 @@ DFRobot_MCP2515 CAN(SPI_CS_PIN);   // Set CS pin
 void setup()
 {
     Serial.begin(115200);
-    int count = 50;   // the max numbers of initializint the CAN-BUS, if initialize failed first!.
-    do {
-        CAN.init();   // must initialize the Can interface here! 
-        if(CAN_OK == CAN.begin(CAN_500KBPS))   // init can bus : baudrate = 500k
-        {
-            Serial.println("DFROBOT's CAN BUS Shield init ok!");
-            break;
-        }
-        else
-        {
-            Serial.println("DFROBOT's CAN BUS Shield init fail");
-            Serial.println("Please Init CAN BUS Shield again");
-            delay(100);
-            if (count <= 1)
-                Serial.println("Please give up trying!, trying is useless!");
-        }
-    }while(count--);
+
+    while( ! CAN.begin(CAN_500KBPS) ){   // init can bus : baudrate = 500k
+        Serial.println("DFROBOT's CAN BUS Shield init fail");
+        Serial.println("Please Init CAN BUS Shield again");
+        delay(3000);
+    }
+    Serial.println("DFROBOT's CAN BUS Shield init ok!\n");
+
 }
 
 void loop()

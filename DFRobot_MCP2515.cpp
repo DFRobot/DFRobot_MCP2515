@@ -3,7 +3,7 @@
  * @brief  Define infrastructure of DFRobot_MCP2515 class
  * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @license  The MIT License (MIT)
- * @author  Jansion
+ * @author  Arduinolibrary
  * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
  * @version  V1.0
  * @date  2022-05-25
@@ -11,101 +11,77 @@
  */
 #include "DFRobot_MCP2515.h"
 
-#define ReadWriteOneByte SPI.transfer
-#define Read() SPI.transfer(0x00)
 
 void DFRobot_MCP2515::mcpReset(void)
 {
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_RESET);
-    MCP2515_SPI_UNSELECT();
+    digitalWrite(_csPin, LOW);
+    SPI.transfer(MCP2515_RESET);
+    digitalWrite(_csPin, HIGH);
     delay(10);
 }
 
-INT8U DFRobot_MCP2515::mcpReadRegister(const INT8U RegAddr)
+void DFRobot_MCP2515::readReg(const uint8_t RegAddr, uint8_t *buf, uint8_t len)
 {
-    INT8U ret;
-
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_READ);
-    ReadWriteOneByte(RegAddr);
-    ret = Read();
-    MCP2515_SPI_UNSELECT();
-
-    return ret;
-}
-
-void DFRobot_MCP2515::mcpReadMulitiRegisters(const INT8U RegAddr, INT8U *buf, INT8U len)
-{
-    INT8U i;
+    uint8_t i;
 
     if ( len > CAN_MAX_MESSAGE_LENGTH)
     {
         len = CAN_MAX_MESSAGE_LENGTH;
     }
     
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_READ);
-    ReadWriteOneByte(RegAddr);
+    digitalWrite(_csPin, LOW);
+    SPI.transfer(MCP2515_READ);
+    SPI.transfer(RegAddr);
 
     for (i=0; i < len; i++) {
-        buf[i] = Read();
+        buf[i] = SPI.transfer(0x00);
     }
-    MCP2515_SPI_UNSELECT();
+    digitalWrite(_csPin, HIGH);
 }
 
-void DFRobot_MCP2515::mcpSetRegister(const INT8U RegAddr, const INT8U value)
+void DFRobot_MCP2515::writeReg(const uint8_t RegAddr, const uint8_t *buf, const uint8_t len)
 {
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_WRITE);
-    ReadWriteOneByte(RegAddr);
-    ReadWriteOneByte(value);
-    MCP2515_SPI_UNSELECT();
-}
-
-void DFRobot_MCP2515::mcpSetMulitRegisterS(const INT8U RegAddr, const INT8U *buf, const INT8U len)
-{
-    INT8U i;
+    uint8_t i;
     
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_WRITE);
-    ReadWriteOneByte(RegAddr);
+    digitalWrite(_csPin, LOW);
+    SPI.transfer(MCP2515_WRITE);
+    SPI.transfer(RegAddr);
        
     for (i=0; i < len; i++) 
     {
-        ReadWriteOneByte(buf[i]);
+        SPI.transfer(buf[i]);
     }
-    MCP2515_SPI_UNSELECT();
+    digitalWrite(_csPin, HIGH);
 }
 
-void DFRobot_MCP2515::mcpModifyRegister(const INT8U RegAddr, const INT8U mask, const INT8U data)
+void DFRobot_MCP2515::modifyReg(const uint8_t RegAddr, const uint8_t mask, const uint8_t data)
 {
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_BITMOD);
-    ReadWriteOneByte(RegAddr);
-    ReadWriteOneByte(mask);
-    ReadWriteOneByte(data);
-    MCP2515_SPI_UNSELECT();
+    digitalWrite(_csPin, LOW);
+    SPI.transfer(MCP2515_BITMOD);
+    SPI.transfer(RegAddr);
+    SPI.transfer(mask);
+    SPI.transfer(data);
+    digitalWrite(_csPin, HIGH);
 }
 
-INT8U DFRobot_MCP2515::mcpReadStatus(void)
+uint8_t DFRobot_MCP2515::mcpReadStatus(void)
 {
-    INT8U ret;
-    
-    MCP2515_SPI_SELECT();
-    ReadWriteOneByte(MCP2515_RX_STATUS);
-    ret = Read();
-    MCP2515_SPI_UNSELECT();
+    uint8_t ret;
+
+    digitalWrite(_csPin, LOW);
+    SPI.transfer(MCP2515_RX_STATUS);
+    ret = SPI.transfer(0x00);
+    digitalWrite(_csPin, HIGH);
     
     return ret;
 }
 
-INT8U DFRobot_MCP2515::mcpSetMode(const INT8U newMode)
+uint8_t DFRobot_MCP2515::mcpSetMode(const uint8_t newMode)
 {
-    INT8U ret;
+    uint8_t ret;
 
-    mcpModifyRegister(MCP2515_CANCTRL, MODE_MASK, newMode);
-    ret = mcpReadRegister(MCP2515_CANCTRL);
+    modifyReg(MCP2515_CANCTRL, MODE_MASK, newMode);
+    readReg(MCP2515_CANCTRL, &ret, 1);
     ret &= MODE_MASK;
 
     if ( ret == newMode ) 
@@ -117,9 +93,9 @@ INT8U DFRobot_MCP2515::mcpSetMode(const INT8U newMode)
 
 }
 
-INT8U DFRobot_MCP2515::mcpConfigRate(const INT8U canSpeed)
+uint8_t DFRobot_MCP2515::mcpConfigRate(const uint8_t canSpeed)
 {
-    INT8U preSet, cfg1, cfg2, cfg3;
+    uint8_t preSet, cfg1, cfg2, cfg3;
     
     preSet = 0;
     switch (canSpeed) 
@@ -226,9 +202,9 @@ INT8U DFRobot_MCP2515::mcpConfigRate(const INT8U canSpeed)
     }
 
     if (!preSet) {
-        mcpSetRegister(MCP2515_CNF1, cfg1);
-        mcpSetRegister(MCP2515_CNF2, cfg2);
-        mcpSetRegister(MCP2515_CNF3, cfg3);
+        writeReg(MCP2515_CNF1, &cfg1, 1);
+        writeReg(MCP2515_CNF2, &cfg2, 1);
+        writeReg(MCP2515_CNF3, &cfg3, 1);
         return MCP2515_OK;
     }
     else {
@@ -238,26 +214,27 @@ INT8U DFRobot_MCP2515::mcpConfigRate(const INT8U canSpeed)
 
 void DFRobot_MCP2515::mcpInitBuffers(void)
 {
-    INT8U i, a1, a2, a3;
+    uint8_t i, a1, a2, a3;
+    uint8_t value = 0;
  
     a1 = MCP2515_TXB0CTRL;
     a2 = MCP2515_TXB1CTRL;
     a3 = MCP2515_TXB2CTRL;
     for (i = 0; i < 14; i++) {
-        mcpSetRegister(a1, 0);
-        mcpSetRegister(a2, 0);
-        mcpSetRegister(a3, 0);
+        writeReg(a1, &value, 1);
+        writeReg(a2, &value, 1);
+        writeReg(a3, &value, 1);
         a1++;
         a2++;
         a3++;
     }
-    mcpSetRegister(MCP2515_RXB0CTRL, 0);
-    mcpSetRegister(MCP2515_RXB1CTRL, 0);
+    writeReg(MCP2515_RXB0CTRL, &value, 1);
+    writeReg(MCP2515_RXB1CTRL, &value, 1);
 }
 
-INT8U DFRobot_MCP2515::mcpInit(const INT8U canSpeed)
+uint8_t DFRobot_MCP2515::mcpInit(const uint8_t canSpeed)
 {
-    INT8U res;
+    uint8_t res, value;
 
     res = mcpSetMode(MODE_CONFIG);
     if(res > 0)
@@ -278,12 +255,13 @@ INT8U DFRobot_MCP2515::mcpInit(const INT8U canSpeed)
 
         mcpInitBuffers();
 
-        mcpSetRegister(MCP2515_CANINTE, MCP2515_RX0IF | MCP2515_RX1IF);
+        value = MCP2515_RX0IF | MCP2515_RX1IF
+        writeReg(MCP2515_CANINTE, &value, 1);
 
-        mcpModifyRegister(MCP2515_RXB0CTRL,
+        modifyReg(MCP2515_RXB0CTRL,
         MCP2515_RXB_RX_MASK | MCP2515_RXB_BUKT_MASK,
         MCP2515_RXB_RX_STDEXT | MCP2515_RXB_BUKT_MASK );
-        mcpModifyRegister(MCP2515_RXB1CTRL, MCP2515_RXB_RX_MASK,
+        modifyReg(MCP2515_RXB1CTRL, MCP2515_RXB_RX_MASK,
         MCP2515_RXB_RX_STDEXT);
         res = mcpSetMode(MODE_NORMAL);
         if(res)
@@ -299,38 +277,38 @@ INT8U DFRobot_MCP2515::mcpInit(const INT8U canSpeed)
 }
 
 
-void DFRobot_MCP2515::mcpWriteid( const INT8U mcpAddr, const INT8U ext, const INT32U id )
+void DFRobot_MCP2515::mcpWriteid( const uint8_t mcpAddr, const uint8_t ext, const uint32_t id )
 {
     uint16_t canid;
-    INT8U tbufdata[4];
+    uint8_t tbufdata[4];
 
     canid = (uint16_t)(id & 0x0FFFF);
 
     if ( ext == 1)
     {
-        tbufdata[MCP2515_EID0] = (INT8U) (canid & 0xFF);
-        tbufdata[MCP2515_EID8] = (INT8U) (canid >> 8);
+        tbufdata[MCP2515_EID0] = (uint8_t) (canid & 0xFF);
+        tbufdata[MCP2515_EID8] = (uint8_t) (canid >> 8);
         canid = (uint16_t)(id >> 16);
-        tbufdata[MCP2515_SIDL] = (INT8U) (canid & 0x03);
-        tbufdata[MCP2515_SIDL] += (INT8U) ((canid & 0x1C) << 3);
+        tbufdata[MCP2515_SIDL] = (uint8_t) (canid & 0x03);
+        tbufdata[MCP2515_SIDL] += (uint8_t) ((canid & 0x1C) << 3);
         tbufdata[MCP2515_SIDL] |= MCP2515_TXB_EXIDE_M;
-        tbufdata[MCP2515_SIDH] = (INT8U) (canid >> 5 );
+        tbufdata[MCP2515_SIDH] = (uint8_t) (canid >> 5 );
     }
     else 
     {
-        tbufdata[MCP2515_SIDH] = (INT8U) (canid >> 3 );
-        tbufdata[MCP2515_SIDL] = (INT8U) ((canid & 0x07 ) << 5);
+        tbufdata[MCP2515_SIDH] = (uint8_t) (canid >> 3 );
+        tbufdata[MCP2515_SIDL] = (uint8_t) ((canid & 0x07 ) << 5);
         tbufdata[MCP2515_EID0] = 0;
         tbufdata[MCP2515_EID8] = 0;
     }
-    mcpSetMulitRegisterS( mcpAddr, tbufdata, 4 );
+    writeReg( mcpAddr, tbufdata, 4 );
 }
 
-void DFRobot_MCP2515::mcpReadid( const INT8U mcpAddr, INT8U* ext, INT32U* id )
+void DFRobot_MCP2515::mcpReadid( const uint8_t mcpAddr, uint8_t* ext, uint32_t* id )
 {
-    INT8U id_Buf[4];
+    uint8_t id_Buf[4];
 
-    mcpReadMulitiRegisters( mcpAddr, (INT8U *)id_Buf, 4 );
+    readReg( mcpAddr, (uint8_t *)id_Buf, 4 );
 
     *id = (id_Buf[MCP2515_SIDH]<< 3) + (id_Buf[MCP2515_SIDL]>>5);
 
@@ -343,26 +321,26 @@ void DFRobot_MCP2515::mcpReadid( const INT8U mcpAddr, INT8U* ext, INT32U* id )
     }
 }
 
-void DFRobot_MCP2515::mcpWritecanMsg( const INT8U sidhAddr)
+void DFRobot_MCP2515::mcpWritecanMsg( const uint8_t sidhAddr)
 {
-    INT8U mcpAddr;
+    uint8_t mcpAddr;
     mcpAddr = sidhAddr;
-    mcpSetMulitRegisterS(mcpAddr+5, canData, canDlc );
+    writeReg(mcpAddr+5, canData, canDlc );
     if ( canRtr == 1)
     {
         canDlc |= MCP2515_RTR_MASK;  
     }
-    mcpSetRegister((mcpAddr+4), canDlc );
+    writeReg((mcpAddr+4), &canDlc, 1);
     mcpWriteid(mcpAddr, canExtFlg, canID );
 }
 
-void DFRobot_MCP2515::mcpReadcanMsg( const INT8U idh_addr)
+void DFRobot_MCP2515::mcpReadcanMsg( const uint8_t idh_addr)
 {
 
     mcpReadid( idh_addr, &canExtFlg,&canID );
 
-    canRtr = mcpReadRegister( idh_addr - 1 );
-    canDlc = mcpReadRegister( idh_addr + 4 );
+    readReg(idh_addr - 1, &canRtr, 1);
+    readReg(idh_addr + 4, &canDlc, 1);
 
     if ((canRtr & (1 << 3))) {
         canRtr = 1;
@@ -372,24 +350,24 @@ void DFRobot_MCP2515::mcpReadcanMsg( const INT8U idh_addr)
     }
 
     canDlc &= MCP2515_DLC_MASK;
-    mcpReadMulitiRegisters( idh_addr+5, (INT8U *)canData, canDlc);
+    readReg( idh_addr+5, (uint8_t *)canData, canDlc);
 }
 
-void DFRobot_MCP2515::mcpStarttransmit(const INT8U mcpAddr)
+void DFRobot_MCP2515::mcpStarttransmit(const uint8_t mcpAddr)
 {
-    mcpModifyRegister( mcpAddr-1 , MCP2515_TXB_TXREQ_M, MCP2515_TXB_TXREQ_M );
+    modifyReg( mcpAddr-1 , MCP2515_TXB_TXREQ_M, MCP2515_TXB_TXREQ_M );
 }
 
-INT8U DFRobot_MCP2515::mcpGetNextFreeTXBuf(INT8U *txbuf_n)
+uint8_t DFRobot_MCP2515::mcpGetNextFreeTXBuf(uint8_t *txbuf_n)
 {
-    INT8U res, i, ctrlval;
-    INT8U ctrlregs[MCP2515_N_TXBUFFERS] = { MCP2515_TXB0CTRL, MCP2515_TXB1CTRL, MCP2515_TXB2CTRL };
+    uint8_t res, i, ctrlval;
+    uint8_t ctrlregs[MCP2515_N_TXBUFFERS] = { MCP2515_TXB0CTRL, MCP2515_TXB1CTRL, MCP2515_TXB2CTRL };
 
     res = MCP2515_ALLTXBUSY;
     *txbuf_n = 0x00;
 
     for (i=0; i < MCP2515_N_TXBUFFERS; i++) {
-        ctrlval = mcpReadRegister( ctrlregs[i] );
+        readReg( ctrlregs[i] , &ctrlval, 1);
         if ( (ctrlval & MCP2515_TXB_TXREQ_M) == 0 ) {
             *txbuf_n = ctrlregs[i]+1;
             res = MCP2515_OK;
@@ -399,31 +377,29 @@ INT8U DFRobot_MCP2515::mcpGetNextFreeTXBuf(INT8U *txbuf_n)
     return res;
 }
 
-DFRobot_MCP2515::DFRobot_MCP2515(INT8U csPin)
+DFRobot_MCP2515::DFRobot_MCP2515(uint8_t csPin)
 {
     _csPin = csPin;
+}
+
+uint8_t DFRobot_MCP2515::begin(uint8_t speedset)
+{
     pinMode(_csPin, OUTPUT);
-    MCP2515_SPI_UNSELECT();
-}
+    digitalWrite(_csPin, HIGH);
 
-void DFRobot_MCP2515::init(void)
-{
     SPI.begin();
-    mcpReset();
-}
 
-INT8U DFRobot_MCP2515::begin(INT8U speedset)
-{
-    INT8U res;
-    
+    mcpReset();
+
+    uint8_t res;
     res = mcpInit(speedset);
     if (res == MCP2515_OK) return CAN_OK;
     else return CAN_FAILINIT;
 }
 
-INT8U DFRobot_MCP2515::initMask(eMasker_t maskerNum, INT8U ext, INT32U ulData)
+uint8_t DFRobot_MCP2515::initMask(eMasker_t maskerNum, uint8_t ext, uint32_t ulData)
 {
-    INT8U res = MCP2515_OK;  
+    uint8_t res = MCP2515_OK;  
     
     delay(10);
     res = mcpSetMode(MODE_CONFIG);
@@ -444,16 +420,16 @@ INT8U DFRobot_MCP2515::initMask(eMasker_t maskerNum, INT8U ext, INT32U ulData)
     res = mcpSetMode(MODE_NORMAL);
     if(res > 0){
 
-    delay(10);
-    return res;
-  }  
+        delay(10);
+        return res;
+    }
     delay(10);
     return res;
 }
 
-INT8U DFRobot_MCP2515::initFilter(eFilter_t filterNum, INT8U ext, INT32U Data)
+uint8_t DFRobot_MCP2515::initFilter(eFilter_t filterNum, uint8_t ext, uint32_t Data)
 {
-    INT8U res = MCP2515_OK;  
+    uint8_t res = MCP2515_OK;  
     delay(10);
 
     res = mcpSetMode(MODE_CONFIG);
@@ -507,7 +483,7 @@ INT8U DFRobot_MCP2515::initFilter(eFilter_t filterNum, INT8U ext, INT32U Data)
     return res;
 }
 
-INT8U DFRobot_MCP2515::setMsg(INT32U id, INT8U ext, INT8U len, INT8U rtr, INT8U *pData)
+uint8_t DFRobot_MCP2515::setMsg(uint32_t id, uint8_t ext, uint8_t len, uint8_t rtr, uint8_t *pData)
 {
     int i = 0;
     canExtFlg = ext;
@@ -521,7 +497,7 @@ INT8U DFRobot_MCP2515::setMsg(INT32U id, INT8U ext, INT8U len, INT8U rtr, INT8U 
     return MCP2515_OK;
 }
 
-INT8U DFRobot_MCP2515::setMsg(INT32U id, INT8U ext, INT8U len, INT8U *pData)
+uint8_t DFRobot_MCP2515::setMsg(uint32_t id, uint8_t ext, uint8_t len, uint8_t *pData)
 {
     int i = 0;
     canExtFlg = ext;
@@ -534,7 +510,7 @@ INT8U DFRobot_MCP2515::setMsg(INT32U id, INT8U ext, INT8U len, INT8U *pData)
     return MCP2515_OK;
 }
 
-INT8U DFRobot_MCP2515::clearMsg(void)
+uint8_t DFRobot_MCP2515::clearMsg(void)
 {
 
     canID       = 0;
@@ -548,9 +524,9 @@ INT8U DFRobot_MCP2515::clearMsg(void)
     return MCP2515_OK;
 }
 
-INT8U DFRobot_MCP2515::sendMsg(void)
+uint8_t DFRobot_MCP2515::sendMsg(void)
 {
-    INT8U res, txindex;
+    uint8_t res, txindex;
     uint16_t uiTimeOut = 0;
 
     do {
@@ -568,7 +544,7 @@ INT8U DFRobot_MCP2515::sendMsg(void)
     do
     {
         uiTimeOut++;
-        res = mcpReadRegister(txindex);
+        readReg(txindex, &res, 1);
         res = res & 0x08;
     }while(res && (uiTimeOut < TIMEOUTVALUE));
     if(uiTimeOut == TIMEOUTVALUE)
@@ -579,34 +555,34 @@ INT8U DFRobot_MCP2515::sendMsg(void)
 
 }
 
-INT8U DFRobot_MCP2515::sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf)
+uint8_t DFRobot_MCP2515::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t rtr, uint8_t len, uint8_t *buf)
 {
     setMsg(id, ext, len, rtr, buf);
     return sendMsg();
 }
 
-INT8U DFRobot_MCP2515::sendMsgBuf(INT32U id, INT8U ext, INT8U len, INT8U *buf)
+uint8_t DFRobot_MCP2515::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
 {
     setMsg(id, ext, len, buf);
     return sendMsg();
 }
 
-INT8U DFRobot_MCP2515::readMsg()
+uint8_t DFRobot_MCP2515::readMsg()
 {
-    INT8U status, res;
+    uint8_t status, res;
 
     status = mcpReadStatus();
 
     if ( status & MCP2515_MESGE_RXB0_MSK )
     {
         mcpReadcanMsg( MCP2515_RXBUF_0);   // 0x61
-        mcpModifyRegister(MCP2515_CANINTF, MCP2515_RX0IF, 0);
+        modifyReg(MCP2515_CANINTF, MCP2515_RX0IF, 0);
         res = CAN_OK;
     }
     else if ( status & MCP2515_MESGE_RXB1_MSK )   // message in rx buf1
     {
         mcpReadcanMsg( MCP2515_RXBUF_1);
-        mcpModifyRegister(MCP2515_CANINTF, MCP2515_RX1IF, 0);
+        modifyReg(MCP2515_CANINTF, MCP2515_RX1IF, 0);
         res = CAN_OK;
     }
     else if (status & MCP2515_MESGE_RXB01_MSK)
@@ -620,9 +596,9 @@ INT8U DFRobot_MCP2515::readMsg()
     return res;
 }
 
-INT8U DFRobot_MCP2515::readMsgBuf(INT8U *len, INT8U *buf)
+uint8_t DFRobot_MCP2515::readMsgBuf(uint8_t *len, uint8_t *buf)
 {
-    INT8U  res, i;
+    uint8_t  res, i;
     res= readMsg();
     if (res == CAN_OK) {
        *len = canDlc;
@@ -635,9 +611,9 @@ INT8U DFRobot_MCP2515::readMsgBuf(INT8U *len, INT8U *buf)
     return res;
 }
 
-INT8U DFRobot_MCP2515::readMsgBufID(INT32U *ID, INT8U *len, INT8U *buf)
+uint8_t DFRobot_MCP2515::readMsgBufID(uint32_t *ID, uint8_t *len, uint8_t *buf)
 {
-    INT8U ret;
+    uint8_t ret;
     ret = readMsg();
     if (ret == CAN_OK) {
        *len = canDlc;
@@ -651,9 +627,9 @@ INT8U DFRobot_MCP2515::readMsgBufID(INT32U *ID, INT8U *len, INT8U *buf)
     return ret;
 }
 
-INT8U DFRobot_MCP2515::checkReceive(void)
+uint8_t DFRobot_MCP2515::checkReceive(void)
 {
-    INT8U res;
+    uint8_t res;
     res = mcpReadStatus();
     if ( res & MCP2515_MESGE_NO_MSK ) 
     {
@@ -665,9 +641,10 @@ INT8U DFRobot_MCP2515::checkReceive(void)
     }
 }
 
-INT8U DFRobot_MCP2515::checkError(void)
+uint8_t DFRobot_MCP2515::checkError(void)
 {
-    INT8U flag = mcpReadRegister(MCP2515_EFLG);
+    uint8_t flag;
+    readReg(MCP2515_EFLG, &flag, 1);
 
     if ( flag & MCP2515_EFLG_ERRORMASK ) 
     {
@@ -679,17 +656,17 @@ INT8U DFRobot_MCP2515::checkError(void)
     }
 }
 
-INT32U DFRobot_MCP2515::getCanId(void)
+uint32_t DFRobot_MCP2515::getCanId(void)
 {
     return canID;
 } 
 
-INT8U DFRobot_MCP2515::isRemoteRequest(void)
+uint8_t DFRobot_MCP2515::isRemoteRequest(void)
 {
     return canRtr;
 }
 
-INT8U DFRobot_MCP2515::isExtendedFrame(void)
+uint8_t DFRobot_MCP2515::isExtendedFrame(void)
 {
     return canExtFlg;
 }

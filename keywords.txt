@@ -13,7 +13,6 @@ DFRobot_MCP2515	KEYWORD1
 #######################################
 
 begin	KEYWORD2
-init	KEYWORD2
 initMask	KEYWORD2
 initFilter	KEYWORD2
 

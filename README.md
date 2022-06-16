@@ -48,7 +48,7 @@ There two methods:
      * @param csPin - indicate the spi select pin when mcu commication with the can controler e.i MCP2515
      * @return None
      */
-    DFRobot_MCP2515(INT8U csPin);
+    DFRobot_MCP2515(uint8_t csPin);
 
     /**
      * @fn begin
@@ -56,14 +56,7 @@ There two methods:
      * @param speedset - MCP2515 can config rate
      * @return if successful, it return CAN_OK, or CAN_FAILINIT
      */
-    INT8U begin(INT8U speedset);
-
-    /**
-     * @fn init
-     * @brief initialize the Can controler.
-     * @return None
-     */
-    void  init(void);
+    uint8_t begin(uint8_t speedset);
 
     /**
      * @fn initMask
@@ -73,7 +66,7 @@ There two methods:
      * @param ulData - initialization data
      * @return the status. if success, return MCP2515_OK.
      */
-    INT8U initMask(eMasker_t maskerNum, INT8U ext, INT32U ulData);
+    uint8_t initMask(eMasker_t maskerNum, uint8_t ext, uint32_t ulData);
 
     /**
      * @fn initFilter
@@ -83,42 +76,42 @@ There two methods:
      * @param Data - fileter data
      * @return the status. if success, return MCP2515_OK.
      */
-    INT8U initFilter(eFilter_t filterNum, INT8U ext, INT32U Data);
+    uint8_t initFilter(eFilter_t filterNum, uint8_t ext, uint32_t Data);
 
     /**
      * @fn getCanId
      * @brief get the id of the data cached in Can controller currently.
      * @return return the id number.
      */
-    INT32U getCanId(void);
+    uint32_t getCanId(void);
 
     /**
      * @fn isRemoteRequest
      * @brief tell whether the current data frame buffered in Can controller is remote requestion frame.
      * @return return the id number.
      */
-    INT8U isRemoteRequest(void);
+    uint8_t isRemoteRequest(void);
 
     /**
      * @fn isExtendedFrame
      * @brief tell whether the current data frame buffered in Can controller is extended frame.
      * @return return the id number.
      */
-    INT8U isExtendedFrame(void);
+    uint8_t isExtendedFrame(void);
 
     /**
      * @fn checkReceive
      * @brief check whether data is cached by Can controler.
      * @return if there are some data received by Can controller. the return value is CAN_MSGAVAIL, or CAN_NOMSG.
      */
-    INT8U checkReceive(void);
+    uint8_t checkReceive(void);
 
     /**
      * @fn checkError
      * @brief check whether there is the control error on the Can bus line.
      * @return if control error don't occur, return CAN_OK, or return CAN_CTRLERROR.
      */
-    INT8U checkError(void);
+    uint8_t checkError(void);
 
     /**
      * @fn sendMsgBuf
@@ -129,7 +122,7 @@ There two methods:
      * @param buf - the data to send.
      * @return the status. if success, return MCP2515_OK.
      */
-    INT8U sendMsgBuf(INT32U id, INT8U ext, INT8U len, INT8U *buf);
+    uint8_t sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf);
 
     /**
      * @fn sendMsgBuf
@@ -141,7 +134,7 @@ There two methods:
      * @param buf - the data to send.
      * @return the status. if success, return MCP2515_OK.
      */
-    INT8U sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf);
+    uint8_t sendMsgBuf(uint32_t id, uint8_t ext, uint8_t rtr, uint8_t len, uint8_t *buf);
 
     /**
      * @fn readMsgBuf
@@ -150,7 +143,7 @@ There two methods:
      * @param buf - the data out from the Can controler store into the buf.
      * @return the status. if success, return MCP2515_OK.
      */
-    INT8U readMsgBuf(INT8U *len, INT8U *buf);
+    uint8_t readMsgBuf(uint8_t *len, uint8_t *buf);
 
     /**
      * @fn readMsgBufID
@@ -161,7 +154,7 @@ There two methods:
      * @param buf - the data out from the Can controler store into the buf.
      * @return the status. if success, return MCP2515_OK. or this read operation is failed.
      */
-    INT8U readMsgBufID(INT32U *ID, INT8U *len, INT8U *buf);
+    uint8_t readMsgBufID(uint32_t *ID, uint8_t *len, uint8_t *buf);
 
 ```
 
@@ -174,6 +167,7 @@ Arduino Uno        |      √       |              |             |
 Arduino MEGA2560   |      √       |              |             |
 Arduino Leonardo   |      √       |              |             |
 
+
 ## History
 
 - 2022/05/25 - Version 1.0.0 released.
@@ -181,19 +175,5 @@ Arduino Leonardo   |      √       |              |             |
 
 ## Credits
 
-This software is written by loovee ([luweicong@seeed.cc](luweicong@seeed.cc "luweicong@seeed.cc")) for seeed studio<br>
-and is licensed under [The MIT License](http://opensource.org/licenses/mit-license.php). Check License.txt for more information.<br>
-
-Contributing to this software is warmly welcomed. You can do this basically by<br>
-[forking](https://help.github.com/articles/fork-a-repo), committing modifications and then [pulling requests](https://help.github.com/articles/using-pull-requests) (follow the links above<br>
-for operating guide). Adding change log and your contact into file header is encouraged.<br>
-Thanks for your contribution.
-
-Seeed Studio is an open hardware facilitation company based in Shenzhen, China. <br>
-Benefiting from local manufacture power and convenient global logistic system, <br>
-we integrate resources to serve new era of innovation. Seeed also works with <br>
-global distributors and partners to push open hardware movement.<br>
-
-
-[![Analytics](https://ga-beacon.appspot.com/UA-46589105-3/CAN_BUS_Shield)](https://github.com/igrigorik/ga-beacon)
+Written by Arduinolibrary, 2022. (Welcome to our [website](https://www.dfrobot.com/))
 

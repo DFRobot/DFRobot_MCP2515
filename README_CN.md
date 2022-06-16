@@ -41,124 +41,116 @@ CAN-BUS由于其传输距离长、通信速度中等、可靠性高等特点，�
 
     /**
      * @fn DFRobot_MCP2515
-     * @brief the DFRobot_MCP2515 class' constructor.
-     * @param csPin - indicate the spi select pin when mcu commication with the can controler e.i MCP2515
+     * @brief  构造函数
+     * @param csPin - 单片机与can控制器MCP2515通信时的spi选择引脚
      * @return None
      */
-    DFRobot_MCP2515(INT8U csPin);
+    DFRobot_MCP2515(uint8_t csPin);
 
     /**
      * @fn begin
-     * @brief config the the Can baud rate,  buffer, and interrupt.
-     * @param speedset - MCP2515 can config rate
-     * @return if successful, it return CAN_OK, or CAN_FAILINIT
+     * @brief 配置Can波特率、缓冲区和中断
+     * @param speedset - MCP2515可以配置速率
+     * @return 如果成功，它返回CAN_OK或CAN_FAILINIT
      */
-    INT8U begin(INT8U speedset);
-
-    /**
-     * @fn init
-     * @brief initialize the Can controler.
-     * @return None
-     */
-    void  init(void);
+    uint8_t begin(uint8_t speedset);
 
     /**
      * @fn initMask
-     * @brief initialize the mask register. 
-     * @param maskerNum - maybe set MCP2515_RXM0 or MCP2515_RXM1.
-     * @param ext - extend flag. if ext = 1, indicate the frame is extended frame.
-     * @param ulData - initialization data
-     * @return the status. if success, return MCP2515_OK.
+     * @brief 初始化掩码寄存器
+     * @param maskerNum - 可以设置MCP2515_RXM0或MCP2515_RXM1
+     * @param ext - 扩展帧标记, ext = 1表示扩展帧
+     * @param ulData - 初始化数据
+     * @return 掩码初始化状态。如果成功，返回MCP2515_OK。
      */
-    INT8U initMask(eMasker_t maskerNum, INT8U ext, INT32U ulData);
+    uint8_t initMask(eMasker_t maskerNum, uint8_t ext, uint32_t ulData);
 
     /**
      * @fn initFilter
-     * @brief initialize the fileter register. 
-     * @param filterNum - maybe set MCP2515_RXF0, MCP2515_RXF1、 MCP2515_RXF2、 MCP2515_RXF3、 MCP2515_RXF4、 MCP2515_RXF5.
-     * @param ext - extend flag. if ext = 1, indicate the frame is extended frame.
-     * @param Data - fileter data
-     * @return the status. if success, return MCP2515_OK.
+     * @brief 初始化过滤器寄存器
+     * @param filterNum - 可以设置 MCP2515_RXF0、 MCP2515_RXF1、 MCP2515_RXF2、 MCP2515_RXF3、 MCP2515_RXF4、 MCP2515_RXF5
+     * @param ext - 扩展帧标记, ext = 1表示扩展帧
+     * @param Data - 过滤器参数
+     * @return 过滤器初始化状态。如果成功，返回MCP2515_OK。
      */
-    INT8U initFilter(eFilter_t filterNum, INT8U ext, INT32U Data);
+    uint8_t initFilter(eFilter_t filterNum, uint8_t ext, uint32_t Data);
 
     /**
      * @fn getCanId
-     * @brief get the id of the data cached in Can controller currently.
-     * @return return the id number.
+     * @brief 获取当前缓存在Can控制器中的数据的id
+     * @return 返回id号
      */
-    INT32U getCanId(void);
+    uint32_t getCanId(void);
 
     /**
      * @fn isRemoteRequest
-     * @brief tell whether the current data frame buffered in Can controller is remote requestion frame.
-     * @return return the id number.
+     * @brief 判断当前缓存在Can控制器中的数据帧是否为远程请求帧
+     * @return 返回id号
      */
-    INT8U isRemoteRequest(void);
+    uint8_t isRemoteRequest(void);
 
     /**
      * @fn isExtendedFrame
-     * @brief tell whether the current data frame buffered in Can controller is extended frame.
-     * @return return the id number.
+     * @brief 判断当前缓存在Can控制器中的数据帧是否为扩展帧
+     * @return 返回id号
      */
-    INT8U isExtendedFrame(void);
+    uint8_t isExtendedFrame(void);
 
     /**
      * @fn checkReceive
-     * @brief check whether data is cached by Can controler.
-     * @return if there are some data received by Can controller. the return value is CAN_MSGAVAIL, or CAN_NOMSG.
+     * @brief 检查数据是否被Can控制器缓存
+     * @return 如果Can控制器接收到一些数据。返回值是CAN_MSGAVAIL或CAN_NOMSG。
      */
-    INT8U checkReceive(void);
+    uint8_t checkReceive(void);
 
     /**
      * @fn checkError
-     * @brief check whether there is the control error on the Can bus line.
-     * @return if control error don't occur, return CAN_OK, or return CAN_CTRLERROR.
+     * @brief 检查Can总线线路是否有控制错误
+     * @return 如果控制错误没有发生，返回CAN_OK，或者返回CAN_CTRLERROR。
      */
-    INT8U checkError(void);
+    uint8_t checkError(void);
 
     /**
      * @fn sendMsgBuf
-     * @brief send one data frame.
-     * @param id - the message id num.
-     * @param ext - extend flag. if ext = 1, indicate the frame is extended frame.
-     * @param len - the len of the data to send.
-     * @param buf - the data to send.
-     * @return the status. if success, return MCP2515_OK.
+     * @brief 发送一个数据帧
+     * @param id - 消息的id号
+     * @param ext - 扩展帧标记, ext = 1表示扩展帧
+     * @param len - 要发送的数据的长度
+     * @param buf - 要发送的数据
+     * @return 数据发送状态。如果成功，返回MCP2515_OK。
      */
-    INT8U sendMsgBuf(INT32U id, INT8U ext, INT8U len, INT8U *buf);
+    uint8_t sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf);
 
     /**
      * @fn sendMsgBuf
-     * @brief send the remote requestion message. 
-     * @param id - the message id num. 
-     * @param ext - extend flag. if ext = 1, indicate the frame is extended frame.
-     * @param len - the len of the data to send.
-     * @param rtr - the flag of the remote requestion. if rtr = 1, the frame seem as the remote requestion frame , or the frame is the normal data frame..
-     * @param buf - the data to send.
-     * @return the status. if success, return MCP2515_OK.
+     * @brief 发送远程请求消息
+     * @param id - 消息的id号
+     * @param ext - 扩展帧标记, ext = 1表示扩展帧
+     * @param len - 要发送的数据的长度
+     * @param rtr - 远程请求的标志。如果RTR = 1，则该帧为远程请求帧，否则为是正常的数据帧。
+     * @param buf - 要发送的数据
+     * @return 数据发送状态。如果成功，返回MCP2515_OK。
      */
-    INT8U sendMsgBuf(INT32U id, INT8U ext, INT8U rtr, INT8U len, INT8U *buf);
+    uint8_t sendMsgBuf(uint32_t id, uint8_t ext, uint8_t rtr, uint8_t len, uint8_t *buf);
 
     /**
      * @fn readMsgBuf
-     * @brief read one data frame from the cache in inner can controler. 
-     * @param len - the len of the data to read.
-     * @param buf - the data out from the Can controler store into the buf.
-     * @return the status. if success, return MCP2515_OK.
+     * @brief 从can控制器内部的缓存中读取一个数据帧
+     * @param len - 要读取的数据的长度
+     * @param buf - 数据从Can控制器存储到buf
+     * @return 数据读取状态。如果成功，返回MCP2515_OK。
      */
-    INT8U readMsgBuf(INT8U *len, INT8U *buf);
+    uint8_t readMsgBuf(uint8_t *len, uint8_t *buf);
 
     /**
      * @fn readMsgBufID
-     * @brief read one data frame from the cache in inner Can controler with the indicated ID, 
-     * @n  if Can controler has not cached the ID's Frame the return value is not CAN_OK.
-     * @param ID - ID number.
-     * @param len - the len of the data to read.
-     * @param buf - the data out from the Can controler store into the buf.
-     * @return the status. if success, return MCP2515_OK. or this read operation is failed.
+     * @brief 从Can控制器内部的缓存中读取一个指定ID的数据帧，如果Can控制器没有缓存该ID的帧，返回值就不是MCP2515_OK。
+     * @param ID - 消息的id号
+     * @param len - 要读取的数据的长度
+     * @param buf - 数据从Can控制器存储到buf
+     * @return 数据读取状态。如果成功，返回MCP2515_OK， 否则读取操作失败。
      */
-    INT8U readMsgBufID(INT32U *ID, INT8U *len, INT8U *buf);
+    uint8_t readMsgBufID(uint32_t *ID, uint8_t *len, uint8_t *buf);
 
 ```
 
@@ -179,19 +171,5 @@ Arduino Leonardo   |      √       |              |             |
 
 ## 创作者
 
-This software is written by loovee ([luweicong@seeed.cc](luweicong@seeed.cc "luweicong@seeed.cc")) for seeed studio<br>
-and is licensed under [The MIT License](http://opensource.org/licenses/mit-license.php). Check License.txt for more information.<br>
-
-Contributing to this software is warmly welcomed. You can do this basically by<br>
-[forking](https://help.github.com/articles/fork-a-repo), committing modifications and then [pulling requests](https://help.github.com/articles/using-pull-requests) (follow the links above<br>
-for operating guide). Adding change log and your contact into file header is encouraged.<br>
-Thanks for your contribution.
-
-Seeed Studio is an open hardware facilitation company based in Shenzhen, China. <br>
-Benefiting from local manufacture power and convenient global logistic system, <br>
-we integrate resources to serve new era of innovation. Seeed also works with <br>
-global distributors and partners to push open hardware movement.<br>
-
-
-[![Analytics](https://ga-beacon.appspot.com/UA-46589105-3/CAN_BUS_Shield)](https://github.com/igrigorik/ga-beacon)
+Written by Arduinolibrary, 2022. (Welcome to our [website](https://www.dfrobot.com/))
 
