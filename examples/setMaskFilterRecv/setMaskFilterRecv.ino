@@ -23,7 +23,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    while( ! CAN.begin(CAN_500KBPS) ){   // init can bus : baudrate = 500k
+    while( CAN.begin(CAN_500KBPS) ){   // init can bus : baudrate = 500k
         Serial.println("DFROBOT's CAN BUS Shield init fail");
         Serial.println("Please Init CAN BUS Shield again");
         delay(3000);
