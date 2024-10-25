@@ -35,7 +35,7 @@ CAN-BUS is a common industrial bus because of its long travel distance, medium c
 There two methods:
 
 1. To use this library, first download the library file, paste it into the \Arduino\libraries directory, then open the examples folder and run the demo in the folder.
-2. Search the DFRobot_SCD4X library from the Arduino Software Library Manager and download it.
+2. Search the DFRobot_MCP2515 library from the Arduino Software Library Manager and download it.
 
 
 ## Methods
